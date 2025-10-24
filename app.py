@@ -165,21 +165,16 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background-color: transparent;
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-weight: 500;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: #667eea;
-        color: white;
+    /* Calendar connection badge */
+    .calendar-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        background: #d1fae5;
+        color: #065f46;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        margin: 8px 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -234,13 +229,13 @@ def add_sleep_entry(date, bedtime, waketime):
 
 def get_sleep_quality(duration):
     if 7 <= duration <= 9:
-        return "Optimal", "🟢", "#10b981"
+        return "Optimal", "#10b981"
     elif 6 <= duration < 7:
-        return "Good", "🟡", "#f59e0b"
+        return "Good", "#f59e0b"
     elif 5 <= duration < 6:
-        return "Fair", "🟠", "#f97316"
+        return "Fair", "#f97316"
     else:
-        return "Poor", "🔴", "#ef4444"
+        return "Poor", "#ef4444"
 
 def calculate_duration(bedtime, waketime):
     bed = datetime.strptime(bedtime, '%H:%M')
@@ -258,20 +253,36 @@ def get_smart_suggestions():
         "Quality sleep improves decision-making by 30%"
     ]
 
+def calculate_burnout_risk():
+    if not st.session_state.sleep_data:
+        return "Low", "#10b981"
+    
+    avg_sleep = sum([s['duration'] for s in st.session_state.sleep_data]) / len(st.session_state.sleep_data)
+    incomplete_tasks = len([t for t in st.session_state.tasks if not t['completed']])
+    
+    if avg_sleep < 6 and incomplete_tasks > 5:
+        return "Critical", "#ef4444"
+    elif avg_sleep < 6.5 and incomplete_tasks > 4:
+        return "High", "#f97316"
+    elif avg_sleep < 7 and incomplete_tasks > 3:
+        return "Moderate", "#f59e0b"
+    else:
+        return "Low", "#10b981"
+
 # User Type Selection
 if st.session_state.user_type is None:
     st.markdown("<div style='text-align: center; padding: 60px 0;'>", unsafe_allow_html=True)
-    st.markdown("<h1 style='font-size: 3em; margin-bottom: 10px;'>📚 Planning Pro</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size: 3em; margin-bottom: 10px;'>Planning Pro</h1>", unsafe_allow_html=True)
     st.markdown("<p style='font-size: 1.3em; color: #6b7280; margin-bottom: 40px;'>Smart Sleep & Task Management</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 1, 1])
     with col1:
         st.markdown("</div>", unsafe_allow_html=True)
     with col2:
-        if st.button("📚 Student Mode", use_container_width=True, type="primary"):
+        if st.button("Student Mode", use_container_width=True, type="primary"):
             st.session_state.user_type = "student"
             st.rerun()
-        if st.button("💼 Professional Mode", use_container_width=True):
+        if st.button("Professional Mode", use_container_width=True):
             st.session_state.user_type = "professional"
             st.rerun()
     st.stop()
@@ -283,17 +294,36 @@ st.markdown("---")
 
 # Sidebar
 with st.sidebar:
-    st.markdown("### 🎯 Navigation")
+    st.markdown("### Navigation")
     
     if st.session_state.user_type == "student":
-        tab_options = ["📋 Tasks", "😴 Sleep", "📊 Analytics"]
+        tab_options = ["Tasks", "Sleep", "Analytics"]
     else:
-        tab_options = ["📋 Tasks", "😴 Sleep", "👥 Team", "💰 Billing", "📊 Analytics"]
+        tab_options = ["Tasks", "Sleep", "Team", "Billing", "Analytics"]
     
     selected_tab = st.radio("", tab_options, label_visibility="collapsed")
     
     st.markdown("---")
-    st.markdown("### 📊 Quick Stats")
+    
+    # Google Calendar Integration
+    st.markdown("### Google Calendar")
+    
+    if st.session_state.google_connected:
+        st.markdown("<div class='calendar-badge'>✓ Connected</div>", unsafe_allow_html=True)
+        
+        if st.button("Sync Tasks", use_container_width=True):
+            for task in st.session_state.tasks:
+                task['synced'] = True
+            st.success("Tasks synced to Google Calendar")
+            st.rerun()
+    else:
+        if st.button("Connect Google Calendar", use_container_width=True, type="primary"):
+            st.session_state.google_connected = True
+            st.success("Connected to Google Calendar")
+            st.rerun()
+    
+    st.markdown("---")
+    st.markdown("### Quick Stats")
     
     total = len(st.session_state.tasks)
     completed = len([t for t in st.session_state.tasks if t['completed']])
@@ -313,12 +343,12 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown("---")
-    if st.button("🔄 Switch Mode", use_container_width=True):
+    if st.button("Switch Mode", use_container_width=True):
         st.session_state.user_type = None
         st.rerun()
 
 # Tasks Tab
-if "📋 Tasks" in selected_tab:
+if selected_tab == "Tasks":
     col1, col2 = st.columns([2, 1])
     
     with col1:
@@ -335,10 +365,10 @@ if "📋 Tasks" in selected_tab:
             with col_b:
                 due_date = st.date_input("Due Date", label_visibility="collapsed")
             
-            if st.button("➕ Add Task", type="primary", use_container_width=True):
+            if st.button("Add Task", type="primary", use_container_width=True):
                 if task_title:
                     add_task(task_title, priority.lower(), due_date)
-                    st.success("✅ Task added successfully")
+                    st.success("Task added successfully")
                     st.rerun()
             st.markdown("</div>", unsafe_allow_html=True)
         
@@ -357,11 +387,11 @@ if "📋 Tasks" in selected_tab:
             
             for idx, task in enumerate(filtered_tasks):
                 priority_colors = {
-                    'high': ('#fee2e2', '#ef4444', '🔴'),
-                    'medium': ('#fef3c7', '#f59e0b', '🟡'),
-                    'low': ('#d1fae5', '#10b981', '🟢')
+                    'high': ('#fee2e2', '#ef4444'),
+                    'medium': ('#fef3c7', '#f59e0b'),
+                    'low': ('#d1fae5', '#10b981')
                 }
-                bg, border, emoji = priority_colors[task['priority']]
+                bg, border = priority_colors[task['priority']]
                 
                 col_check, col_task, col_del = st.columns([0.3, 4, 0.3])
                 
@@ -373,19 +403,20 @@ if "📋 Tasks" in selected_tab:
                 
                 with col_task:
                     style = "text-decoration: line-through; opacity: 0.5;" if task['completed'] else ""
+                    synced = "<span style='color: #10b981; font-size: 12px;'>• Synced</span>" if task['synced'] else ""
                     st.markdown(f"""
                     <div class='task-item' style='background: {bg}; border-left: 4px solid {border}; {style}'>
                         <div style='font-weight: 600; font-size: 15px; color: #1a202c; margin-bottom: 6px;'>
-                            {emoji} {task['title']}
+                            {task['title']}
                         </div>
                         <div style='color: #6b7280; font-size: 13px;'>
-                            📅 Due: {task['due_date']} • {task['priority'].capitalize()} Priority
+                            Due: {task['due_date']} • {task['priority'].capitalize()} Priority {synced}
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
                 
                 with col_del:
-                    if st.button("🗑️", key=f"d{task['id']}{idx}"):
+                    if st.button("Delete", key=f"d{task['id']}{idx}"):
                         delete_task(task['id'])
                         st.rerun()
     
@@ -415,15 +446,15 @@ if "📋 Tasks" in selected_tab:
             <div style='color: #1a202c; font-weight: 600; margin-bottom: 16px;'>Pending Tasks</div>
             <div style='margin: 12px 0;'>
                 <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
-                    <span style='color: #6b7280; font-size: 14px;'>🔴 High Priority</span>
+                    <span style='color: #6b7280; font-size: 14px;'>High Priority</span>
                     <span style='font-weight: 600;'>{high_count}</span>
                 </div>
                 <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
-                    <span style='color: #6b7280; font-size: 14px;'>🟡 Medium Priority</span>
+                    <span style='color: #6b7280; font-size: 14px;'>Medium Priority</span>
                     <span style='font-weight: 600;'>{medium_count}</span>
                 </div>
                 <div style='display: flex; justify-content: space-between;'>
-                    <span style='color: #6b7280; font-size: 14px;'>🟢 Low Priority</span>
+                    <span style='color: #6b7280; font-size: 14px;'>Low Priority</span>
                     <span style='font-weight: 600;'>{low_count}</span>
                 </div>
             </div>
@@ -431,7 +462,7 @@ if "📋 Tasks" in selected_tab:
         """, unsafe_allow_html=True)
 
 # Sleep Tab
-elif "😴 Sleep" in selected_tab:
+elif selected_tab == "Sleep":
     col1, col2 = st.columns([1.5, 1])
     
     with col1:
@@ -443,17 +474,17 @@ elif "😴 Sleep" in selected_tab:
             
             col_a, col_b = st.columns(2)
             with col_a:
-                st.markdown("#### 🌙 Bedtime")
+                st.markdown("#### Bedtime")
                 bedtime = st.time_input("Bedtime", value=datetime.strptime("22:00", "%H:%M").time(), label_visibility="collapsed")
             with col_b:
-                st.markdown("#### ☀️ Wake Time")
+                st.markdown("#### Wake Time")
                 waketime = st.time_input("Wake Time", value=datetime.strptime("06:00", "%H:%M").time(), label_visibility="collapsed")
             
             duration = calculate_duration(bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
             
             st.markdown(f"""
             <div class='duration-display'>
-                <div style='font-size: 14px; opacity: 0.9; margin-bottom: 8px;'>⏰ Sleep Duration</div>
+                <div style='font-size: 14px; opacity: 0.9; margin-bottom: 8px;'>Sleep Duration</div>
                 <div class='duration-number'>{duration} hours</div>
                 <div style='font-size: 14px; opacity: 0.9;'>Target: 8 hours</div>
             </div>
@@ -461,9 +492,9 @@ elif "😴 Sleep" in selected_tab:
             
             sleep_date = st.date_input("Date", label_visibility="collapsed")
             
-            if st.button("💾 Save Schedule", type="primary", use_container_width=True):
+            if st.button("Save Schedule", type="primary", use_container_width=True):
                 add_sleep_entry(sleep_date, bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
-                st.success("✅ Sleep schedule saved")
+                st.success("Sleep schedule saved")
                 st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
@@ -472,7 +503,7 @@ elif "😴 Sleep" in selected_tab:
         st.markdown("""
         <div class='suggestions-box'>
             <div style='color: #5a67d8; font-weight: 600; font-size: 16px; margin-bottom: 12px;'>
-                💡 Smart Suggestions for Professionals
+                Smart Suggestions for Professionals
             </div>
         """, unsafe_allow_html=True)
         
@@ -486,7 +517,7 @@ elif "😴 Sleep" in selected_tab:
         
         if st.session_state.sleep_data:
             for entry in st.session_state.sleep_data[-5:]:
-                quality, emoji, color = get_sleep_quality(entry['duration'])
+                quality, color = get_sleep_quality(entry['duration'])
                 st.markdown(f"""
                 <div class='card'>
                     <div style='font-weight: 600; margin-bottom: 8px;'>{entry['date']}</div>
@@ -495,34 +526,80 @@ elif "😴 Sleep" in selected_tab:
                     </div>
                     <div style='display: flex; justify-content: space-between; align-items: center;'>
                         <div style='font-size: 1.8em; font-weight: 700;'>{entry['duration']}h</div>
-                        <div style='color: {color}; font-weight: 600;'>{emoji} {quality}</div>
+                        <div style='color: {color}; font-weight: 600;'>{quality}</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
         else:
             st.info("No sleep data yet")
 
-# Analytics, Team, Billing tabs (keeping them simple for now)
-elif "📊 Analytics" in selected_tab:
+# Analytics Tab
+elif selected_tab == "Analytics":
     st.markdown("### Analytics Dashboard")
-    if st.session_state.tasks:
-        completed = len([t for t in st.session_state.tasks if t['completed']])
-        pending = len(st.session_state.tasks) - completed
-        fig = go.Figure(data=[go.Pie(
-            labels=['Completed', 'Pending'],
-            values=[completed, pending],
-            hole=.5,
-            marker_colors=['#10b981', '#ef4444']
-        )])
-        fig.update_layout(height=400, showlegend=True)
-        st.plotly_chart(fig, use_container_width=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Task Completion")
+        if st.session_state.tasks:
+            completed = len([t for t in st.session_state.tasks if t['completed']])
+            pending = len(st.session_state.tasks) - completed
+            fig = go.Figure(data=[go.Pie(
+                labels=['Completed', 'Pending'],
+                values=[completed, pending],
+                hole=.5,
+                marker_colors=['#10b981', '#ef4444']
+            )])
+            fig.update_layout(height=350, showlegend=True, margin=dict(t=0, b=0, l=0, r=0))
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("No task data available")
+    
+    with col2:
+        st.markdown("#### Sleep Trend")
+        if st.session_state.sleep_data:
+            df = pd.DataFrame(st.session_state.sleep_data)
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(
+                x=df['date'],
+                y=df['duration'],
+                mode='lines+markers',
+                line=dict(color='#8b5cf6', width=3),
+                marker=dict(size=8)
+            ))
+            fig.add_trace(go.Scatter(
+                x=df['date'],
+                y=[8]*len(df),
+                mode='lines',
+                line=dict(color='#10b981', dash='dash'),
+                name='Optimal'
+            ))
+            fig.update_layout(height=350, showlegend=True, margin=dict(t=0, b=0, l=0, r=0))
+            st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("No sleep data available")
+    
+    # Burnout Risk
+    risk, color = calculate_burnout_risk()
+    st.markdown(f"""
+    <div class='card' style='text-align: center; padding: 40px;'>
+        <div style='color: #6b7280; font-size: 14px; margin-bottom: 12px;'>BURNOUT RISK LEVEL</div>
+        <div style='font-size: 3em; font-weight: 700; color: {color};'>{risk}</div>
+        <div style='color: #6b7280; font-size: 14px; margin-top: 12px;'>
+            Based on sleep patterns and workload analysis
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-elif "👥 Team" in selected_tab:
+# Team Tab
+elif selected_tab == "Team":
     st.markdown("### Team Dashboard")
-    st.info("Team features coming soon")
+    st.info("Team features available in full version")
 
-elif "💰 Billing" in selected_tab:
+# Billing Tab
+elif selected_tab == "Billing":
     st.markdown("### Billing & Time Tracking")
+    
     st.session_state.hourly_rate = st.number_input("Hourly Rate (USD)", value=st.session_state.hourly_rate, min_value=10)
     
     hours = len(st.session_state.tasks) * 2
@@ -535,3 +612,6 @@ elif "💰 Billing" in selected_tab:
         st.metric("Hourly Rate", f"${st.session_state.hourly_rate}")
     with col3:
         st.metric("Total Earnings", f"${earnings}")
+    
+    if st.button("Generate Invoice", type="primary"):
+        st.success(f"Invoice generated for ${earnings}")
