@@ -29,23 +29,11 @@ st.markdown("""
         border-radius: 12px;
         height: 3.5em;
         font-weight: 600;
-        border: none;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
     }
     h1, h2, h3 {
         color: #1f2937;
         font-weight: 700;
-    }
-    .stMetric {
-        background: white;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -62,7 +50,6 @@ if 'google_connected' not in st.session_state:
 if 'hourly_rate' not in st.session_state:
     st.session_state.hourly_rate = 50
 
-# Helper Functions
 def add_task(title, priority, due_date):
     task = {
         'id': len(st.session_state.tasks) + 1,
@@ -73,7 +60,6 @@ def add_task(title, priority, due_date):
         'synced': False
     }
     st.session_state.tasks.append(task)
-    return True
 
 def toggle_task(task_id):
     for task in st.session_state.tasks:
@@ -99,7 +85,6 @@ def add_sleep_entry(date, bedtime, waketime):
         'duration': round(duration, 1)
     }
     st.session_state.sleep_data.append(entry)
-    return True
 
 def get_sleep_quality(duration):
     if 7 <= duration <= 9:
@@ -127,33 +112,16 @@ def calculate_burnout_risk():
     else:
         return "Low", "🟢", "#10b981"
 
-# Display logo
 def display_logo():
     st.markdown("""
     <div style='text-align: center; padding: 20px;'>
-        <svg width="200" height="200" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <rect x="50" y="100" width="140" height="160" rx="20" fill="#2563eb" opacity="0.9"/>
-            <rect x="50" y="80" width="140" height="40" rx="10" fill="#1e40af"/>
-            <rect x="80" y="140" width="30" height="30" rx="5" fill="white"/>
-            <rect x="120" y="140" width="30" height="30" rx="5" fill="white"/>
-            <rect x="80" y="180" width="30" height="30" rx="5" fill="white"/>
-            <rect x="120" y="180" width="30" height="30" rx="5" fill="white"/>
-            <path d="M 180 180 L 240 240 L 340 100" stroke="url(#grad1)" stroke-width="35" fill="none" stroke-linecap="round"/>
-            <path d="M 180 180 L 240 240 L 340 100" stroke="white" stroke-width="25" fill="none" stroke-linecap="round"/>
-        </svg>
+        <h1 style='background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3em;'>📚 Planning Pro</h1>
     </div>
     """, unsafe_allow_html=True)
 
 # User Type Selection
 if st.session_state.user_type is None:
     display_logo()
-    st.markdown("<h1 style='text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3em;'>Planning Pro</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: #6b7280; font-size: 1.3em;'>Smart Sleep & Task Management</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -186,18 +154,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🔗 Google Calendar")
-    
-    if st.session_state.google_connected:
-        st.success("✅ Connected")
-        if st.button("📤 Sync Tasks"):
-            for task in st.session_state.tasks:
-                task['synced'] = True
-            st.toast("✅ Synced tasks!", icon="✅")
-    else:
-        if st.button("Connect Google"):
-            st.session_state.google_connected = True
-            st.toast("✅ Connected!", icon="✅")
-            st.rerun()
+    st.info("📌 Calendar sync available in local version")
     
     st.markdown("---")
     st.markdown("### 📊 Quick Stats")
@@ -225,7 +182,7 @@ if selected_tab == "Tasks":
         if st.button("Add Task", type="primary", use_container_width=True):
             if task_title:
                 add_task(task_title, priority.lower(), due_date)
-                st.toast("✅ Task added!", icon="✅")
+                st.success("✅ Task added!")
                 st.rerun()
         
         st.markdown("---")
@@ -247,8 +204,7 @@ if selected_tab == "Tasks":
                 
                 with col_task:
                     style = "text-decoration: line-through;" if task['completed'] else ""
-                    synced = "✅" if task['synced'] else ""
-                    st.markdown(f"<div style='background: white; padding: 15px; border-radius: 10px; {style}'><strong>{emoji} {task['title']}</strong><br><small>Due: {task['due_date']} {synced}</small></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background: white; padding: 15px; border-radius: 10px; {style}'><strong>{emoji} {task['title']}</strong><br><small>Due: {task['due_date']}</small></div>", unsafe_allow_html=True)
                 
                 with col_del:
                     if st.button("🗑️", key=f"d{task['id']}{idx}"):
@@ -267,7 +223,6 @@ if selected_tab == "Tasks":
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(f"<div style='background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 25px; border-radius: 15px; color: white; text-align: center;'><h3 style='color: white;'>Completed</h3><h1 style='color: white;'>{completed}</h1></div>", unsafe_allow_html=True)
 
-# Sleep Tab
 elif selected_tab == "Sleep":
     st.markdown("## 😴 Sleep Dashboard")
     
@@ -281,11 +236,10 @@ elif selected_tab == "Sleep":
         
         col1, col2, col3, col4 = st.columns(4)
         avg = df['duration'].mean()
-        optimal = len(df[(df['duration'] >= 7) & (df['duration'] <= 9)])
         with col1:
             st.metric("Avg Sleep", f"{avg:.1f}h")
         with col2:
-            st.metric("Optimal", optimal)
+            st.metric("Optimal", len(df[(df['duration'] >= 7) & (df['duration'] <= 9)]))
         with col3:
             st.metric("Max", f"{df['duration'].max():.1f}h")
         with col4:
@@ -305,7 +259,7 @@ elif selected_tab == "Sleep":
         
         if st.button("Log Entry", type="primary", use_container_width=True):
             add_sleep_entry(sleep_date, bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
-            st.toast("✅ Logged!", icon="😴")
+            st.success("✅ Logged!")
             st.rerun()
     
     with col2:
@@ -315,7 +269,6 @@ elif selected_tab == "Sleep":
                 quality, emoji, color = get_sleep_quality(entry['duration'])
                 st.markdown(f"<div style='background: white; padding: 15px; border-radius: 10px; border-left: 5px solid {color};'><strong>{entry['date']}</strong><br>{entry['bedtime']} → {entry['waketime']}<br><span style='font-size: 24px;'>{entry['duration']}h</span> {emoji} {quality}</div><br>", unsafe_allow_html=True)
 
-# Team Tab
 elif selected_tab == "Team":
     st.markdown("## 👥 Team Wellness")
     team = [
@@ -338,10 +291,9 @@ elif selected_tab == "Team":
         emoji, label, color = config[m['status']]
         st.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 5px solid {color};'><h3>{m['name']} {emoji} {label}</h3><p>📋 {m['tasks']} tasks | 😴 {m['sleep']}h sleep</p></div><br>", unsafe_allow_html=True)
 
-# Billing Tab
 elif selected_tab == "Billing":
     st.markdown("## 💰 Billing")
-    st.session_state.hourly_rate = st.number_input("Hourly Rate", value=st.session_state.hourly_rate, min_value=10, step=5)
+    st.session_state.hourly_rate = st.number_input("Hourly Rate", value=st.session_state.hourly_rate, min_value=10)
     
     col1, col2, col3 = st.columns(3)
     hours = len(st.session_state.tasks) * 2
@@ -354,17 +306,10 @@ elif selected_tab == "Billing":
     with col3:
         st.metric("Earnings", f"${earnings}")
     
-    st.markdown("---")
-    if st.session_state.tasks:
-        for task in st.session_state.tasks:
-            task_earnings = 2 * st.session_state.hourly_rate
-            st.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px;'><strong>{task['title']}</strong><br>2h tracked | ${task_earnings}</div><br>", unsafe_allow_html=True)
-    
-    if st.button("Generate Invoice", type="primary", use_container_width=True):
+    if st.button("Generate Invoice", type="primary"):
         st.balloons()
-        st.toast(f"Invoice: ${earnings}", icon="📄")
+        st.success(f"Invoice: ${earnings}")
 
-# Analytics Tab
 elif selected_tab == "Analytics":
     st.markdown("## 📊 Analytics")
     
@@ -387,6 +332,3 @@ elif selected_tab == "Analytics":
     
     risk, emoji, color = calculate_burnout_risk()
     st.markdown(f"<div style='background: {color}; padding: 30px; border-radius: 20px; color: white; text-align: center;'><h2 style='color: white;'>Burnout Risk</h2><h1 style='color: white; font-size: 3em;'>{emoji} {risk}</h1></div>", unsafe_allow_html=True)
-
-
-    
