@@ -11,29 +11,175 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Enhanced Custom CSS
+# Professional Custom CSS
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
     .main {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        background-attachment: fixed;
+        background: #f8f9fa;
     }
+    
     .block-container {
-        background-color: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        padding: 2rem 3rem;
     }
+    
+    /* Card styling */
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        margin-bottom: 20px;
+    }
+    
+    /* Button styling */
     .stButton>button {
-        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
         border-radius: 12px;
-        height: 3.5em;
+        padding: 12px 24px;
         font-weight: 600;
+        font-size: 15px;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }
-    h1, h2, h3 {
-        color: #1f2937;
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Headers */
+    h1 {
+        color: #1a202c;
         font-weight: 700;
+        font-size: 2em;
+        margin-bottom: 0.5rem;
+    }
+    
+    h2 {
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 1.5em;
+        margin-bottom: 1rem;
+    }
+    
+    h3 {
+        color: #4a5568;
+        font-weight: 600;
+        font-size: 1.2em;
+    }
+    
+    /* Input fields */
+    .stTextInput>div>div>input, .stSelectbox>div>div>select {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 15px;
+        transition: all 0.2s;
+    }
+    
+    .stTextInput>div>div>input:focus, .stSelectbox>div>div>select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    /* Metric cards */
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    /* Task item */
+    .task-item {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 16px;
+        margin: 10px 0;
+        transition: all 0.2s;
+    }
+    
+    .task-item:hover {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    }
+    
+    /* Sleep suggestions box */
+    .suggestions-box {
+        background: linear-gradient(135deg, #f3f4ff 0%, #e8e9ff 100%);
+        border-radius: 12px;
+        padding: 20px;
+        border-left: 4px solid #667eea;
+        margin: 20px 0;
+    }
+    
+    .suggestion-item {
+        color: #5a67d8;
+        font-size: 14px;
+        margin: 8px 0;
+        padding-left: 20px;
+        position: relative;
+    }
+    
+    .suggestion-item:before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+    }
+    
+    /* Duration display */
+    .duration-display {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+    }
+    
+    .duration-number {
+        font-size: 3em;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: #f8f9fa;
+        border-right: 1px solid #e9ecef;
+    }
+    
+    /* Remove default streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background-color: transparent;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background-color: #667eea;
+        color: white;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -90,112 +236,135 @@ def get_sleep_quality(duration):
     if 7 <= duration <= 9:
         return "Optimal", "🟢", "#10b981"
     elif 6 <= duration < 7:
-        return "Acceptable", "🟡", "#f59e0b"
+        return "Good", "🟡", "#f59e0b"
     elif 5 <= duration < 6:
-        return "Poor", "🟠", "#f97316"
+        return "Fair", "🟠", "#f97316"
     else:
-        return "Critical", "🔴", "#ef4444"
+        return "Poor", "🔴", "#ef4444"
 
-def calculate_burnout_risk():
-    if not st.session_state.sleep_data:
-        return "Low", "🟢", "#10b981"
-    
-    avg_sleep = sum([s['duration'] for s in st.session_state.sleep_data]) / len(st.session_state.sleep_data)
-    incomplete_tasks = len([t for t in st.session_state.tasks if not t['completed']])
-    
-    if avg_sleep < 6 and incomplete_tasks > 5:
-        return "Critical", "🔴", "#ef4444"
-    elif avg_sleep < 6.5 and incomplete_tasks > 4:
-        return "High", "🟠", "#f97316"
-    elif avg_sleep < 7 and incomplete_tasks > 3:
-        return "Moderate", "🟡", "#f59e0b"
-    else:
-        return "Low", "🟢", "#10b981"
+def calculate_duration(bedtime, waketime):
+    bed = datetime.strptime(bedtime, '%H:%M')
+    wake = datetime.strptime(waketime, '%H:%M')
+    duration = (wake - bed).seconds / 3600
+    if duration < 0:
+        duration += 24
+    return round(duration, 1)
 
-def display_logo():
-    st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-        <h1 style='background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3em;'>📚 Planning Pro</h1>
-    </div>
-    """, unsafe_allow_html=True)
+def get_smart_suggestions():
+    return [
+        "Adults need 7-9 hours for optimal performance",
+        "Best bedtime: 10 PM - 11:30 PM for work productivity",
+        "Maintain a regular sleep schedule for better energy",
+        "Quality sleep improves decision-making by 30%"
+    ]
 
 # User Type Selection
 if st.session_state.user_type is None:
-    display_logo()
-    st.markdown("<p style='text-align: center; color: #6b7280; font-size: 1.3em;'>Smart Sleep & Task Management</p>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align: center; padding: 60px 0;'>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size: 3em; margin-bottom: 10px;'>📚 Planning Pro</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 1.3em; color: #6b7280; margin-bottom: 40px;'>Smart Sleep & Task Management</p>", unsafe_allow_html=True)
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col1:
+        st.markdown("</div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<br>", unsafe_allow_html=True)
-        col_a, col_b = st.columns(2)
-        with col_a:
-            if st.button("📚 Student", use_container_width=True, type="primary"):
-                st.session_state.user_type = "student"
-                st.rerun()
-        with col_b:
-            if st.button("💼 Professional", use_container_width=True):
-                st.session_state.user_type = "professional"
-                st.rerun()
+        if st.button("📚 Student Mode", use_container_width=True, type="primary"):
+            st.session_state.user_type = "student"
+            st.rerun()
+        if st.button("💼 Professional Mode", use_container_width=True):
+            st.session_state.user_type = "professional"
+            st.rerun()
     st.stop()
 
-# Main App
-st.markdown(f"# 📚 Planning Pro - {st.session_state.user_type.capitalize()} Mode")
+# Main App Header
+st.markdown(f"# Planning Pro")
+st.markdown(f"<p style='color: #6b7280; font-size: 1.1em;'>{st.session_state.user_type.capitalize()} Mode • Smart Task & Sleep Management</p>", unsafe_allow_html=True)
+st.markdown("---")
 
 # Sidebar
 with st.sidebar:
-    st.markdown("## 🎯 Navigation")
+    st.markdown("### 🎯 Navigation")
     
     if st.session_state.user_type == "student":
-        tab_options = ["Tasks", "Sleep", "Analytics"]
+        tab_options = ["📋 Tasks", "😴 Sleep", "📊 Analytics"]
     else:
-        tab_options = ["Tasks", "Sleep", "Team", "Billing", "Analytics"]
+        tab_options = ["📋 Tasks", "😴 Sleep", "👥 Team", "💰 Billing", "📊 Analytics"]
     
     selected_tab = st.radio("", tab_options, label_visibility="collapsed")
     
     st.markdown("---")
-    st.markdown("### 🔗 Google Calendar")
-    st.info("📌 Calendar sync available in local version")
-    
-    st.markdown("---")
     st.markdown("### 📊 Quick Stats")
-    st.metric("Total Tasks", len(st.session_state.tasks))
-    st.metric("Completed", len([t for t in st.session_state.tasks if t['completed']]))
+    
+    total = len(st.session_state.tasks)
+    completed = len([t for t in st.session_state.tasks if t['completed']])
+    
+    st.markdown(f"""
+    <div class='metric-card'>
+        <div style='color: #6b7280; font-size: 13px; font-weight: 500;'>TOTAL TASKS</div>
+        <div style='font-size: 2em; font-weight: 700; color: #1a202c;'>{total}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown(f"""
+    <div class='metric-card'>
+        <div style='color: #6b7280; font-size: 13px; font-weight: 500;'>COMPLETED</div>
+        <div style='font-size: 2em; font-weight: 700; color: #10b981;'>{completed}</div>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.markdown("---")
-    if st.button("🔄 Switch User"):
+    if st.button("🔄 Switch Mode", use_container_width=True):
         st.session_state.user_type = None
         st.rerun()
 
 # Tasks Tab
-if selected_tab == "Tasks":
+if "📋 Tasks" in selected_tab:
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("### ➕ Add New Task")
-        task_title = st.text_input("📝 Task Title", key="task_input")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            priority = st.selectbox("Priority", ["Low", "Medium", "High"])
-        with col_b:
-            due_date = st.date_input("Due Date")
+        st.markdown("### Task Manager")
+        st.markdown("<p style='color: #6b7280; margin-bottom: 20px;'>Organize and prioritize your tasks</p>", unsafe_allow_html=True)
         
-        if st.button("Add Task", type="primary", use_container_width=True):
-            if task_title:
-                add_task(task_title, priority.lower(), due_date)
-                st.success("✅ Task added!")
-                st.rerun()
+        with st.container():
+            st.markdown("<div class='card'>", unsafe_allow_html=True)
+            task_title = st.text_input("Task Title", placeholder="Enter task name...", label_visibility="collapsed")
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                priority = st.selectbox("Priority", ["High", "Medium", "Low"], label_visibility="collapsed")
+            with col_b:
+                due_date = st.date_input("Due Date", label_visibility="collapsed")
+            
+            if st.button("➕ Add Task", type="primary", use_container_width=True):
+                if task_title:
+                    add_task(task_title, priority.lower(), due_date)
+                    st.success("✅ Task added successfully")
+                    st.rerun()
+            st.markdown("</div>", unsafe_allow_html=True)
         
-        st.markdown("---")
-        st.markdown("### 📋 Your Tasks")
+        # Filter tabs
+        st.markdown("<div style='margin: 30px 0 20px 0;'>", unsafe_allow_html=True)
+        filter_tab = st.radio("", ["All", "High", "Medium", "Low"], horizontal=True, label_visibility="collapsed")
+        st.markdown("</div>", unsafe_allow_html=True)
         
+        # Display tasks
         if not st.session_state.tasks:
-            st.info("No tasks yet!")
+            st.markdown("<div class='card' style='text-align: center; padding: 60px 20px;'><p style='color: #9ca3af; font-size: 1.1em;'>No tasks yet. Add your first task to get started!</p></div>", unsafe_allow_html=True)
         else:
-            for idx, task in enumerate(st.session_state.tasks):
-                priority_colors = {'high': '🔴', 'medium': '🟡', 'low': '🟢'}
-                emoji = priority_colors[task['priority']]
+            filtered_tasks = st.session_state.tasks
+            if filter_tab != "All":
+                filtered_tasks = [t for t in st.session_state.tasks if t['priority'] == filter_tab.lower()]
+            
+            for idx, task in enumerate(filtered_tasks):
+                priority_colors = {
+                    'high': ('#fee2e2', '#ef4444', '🔴'),
+                    'medium': ('#fef3c7', '#f59e0b', '🟡'),
+                    'low': ('#d1fae5', '#10b981', '🟢')
+                }
+                bg, border, emoji = priority_colors[task['priority']]
                 
-                col_check, col_task, col_del = st.columns([0.5, 4, 0.5])
+                col_check, col_task, col_del = st.columns([0.3, 4, 0.3])
+                
                 with col_check:
                     checked = st.checkbox("", value=task['completed'], key=f"c{task['id']}{idx}", label_visibility="collapsed")
                     if checked != task['completed']:
@@ -203,8 +372,17 @@ if selected_tab == "Tasks":
                         st.rerun()
                 
                 with col_task:
-                    style = "text-decoration: line-through;" if task['completed'] else ""
-                    st.markdown(f"<div style='background: white; padding: 15px; border-radius: 10px; {style}'><strong>{emoji} {task['title']}</strong><br><small>Due: {task['due_date']}</small></div>", unsafe_allow_html=True)
+                    style = "text-decoration: line-through; opacity: 0.5;" if task['completed'] else ""
+                    st.markdown(f"""
+                    <div class='task-item' style='background: {bg}; border-left: 4px solid {border}; {style}'>
+                        <div style='font-weight: 600; font-size: 15px; color: #1a202c; margin-bottom: 6px;'>
+                            {emoji} {task['title']}
+                        </div>
+                        <div style='color: #6b7280; font-size: 13px;'>
+                            📅 Due: {task['due_date']} • {task['priority'].capitalize()} Priority
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
                 with col_del:
                     if st.button("🗑️", key=f"d{task['id']}{idx}"):
@@ -212,123 +390,148 @@ if selected_tab == "Tasks":
                         st.rerun()
     
     with col2:
-        st.markdown("### 📊 Statistics")
-        total = len(st.session_state.tasks)
-        completed = len([t for t in st.session_state.tasks if t['completed']])
-        high = len([t for t in st.session_state.tasks if t['priority'] == 'high' and not t['completed']])
+        st.markdown("### Overview")
         
-        st.markdown(f"<div style='background: linear-gradient(135deg, #667eea, #764ba2); padding: 25px; border-radius: 15px; color: white; text-align: center;'><h3 style='color: white;'>Total</h3><h1 style='color: white;'>{total}</h1></div>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(f"<div style='background: linear-gradient(135deg, #f093fb, #f5576c); padding: 25px; border-radius: 15px; color: white; text-align: center;'><h3 style='color: white;'>High Priority</h3><h1 style='color: white;'>{high}</h1></div>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(f"<div style='background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 25px; border-radius: 15px; color: white; text-align: center;'><h3 style='color: white;'>Completed</h3><h1 style='color: white;'>{completed}</h1></div>", unsafe_allow_html=True)
+        # Progress card
+        if total > 0:
+            progress = (completed / total) * 100
+            st.markdown(f"""
+            <div class='card'>
+                <div style='color: #6b7280; font-size: 13px; font-weight: 500; margin-bottom: 12px;'>COMPLETION RATE</div>
+                <div style='font-size: 2.5em; font-weight: 700; color: #667eea; margin-bottom: 8px;'>{int(progress)}%</div>
+                <div style='background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;'>
+                    <div style='background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: {progress}%;'></div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Priority breakdown
+        high_count = len([t for t in st.session_state.tasks if t['priority'] == 'high' and not t['completed']])
+        medium_count = len([t for t in st.session_state.tasks if t['priority'] == 'medium' and not t['completed']])
+        low_count = len([t for t in st.session_state.tasks if t['priority'] == 'low' and not t['completed']])
+        
+        st.markdown(f"""
+        <div class='card'>
+            <div style='color: #1a202c; font-weight: 600; margin-bottom: 16px;'>Pending Tasks</div>
+            <div style='margin: 12px 0;'>
+                <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
+                    <span style='color: #6b7280; font-size: 14px;'>🔴 High Priority</span>
+                    <span style='font-weight: 600;'>{high_count}</span>
+                </div>
+                <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
+                    <span style='color: #6b7280; font-size: 14px;'>🟡 Medium Priority</span>
+                    <span style='font-weight: 600;'>{medium_count}</span>
+                </div>
+                <div style='display: flex; justify-content: space-between;'>
+                    <span style='color: #6b7280; font-size: 14px;'>🟢 Low Priority</span>
+                    <span style='font-weight: 600;'>{low_count}</span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-elif selected_tab == "Sleep":
-    st.markdown("## 😴 Sleep Dashboard")
-    
-    if st.session_state.sleep_data:
-        df = pd.DataFrame(st.session_state.sleep_data)
-        fig = go.Figure()
-        fig.add_trace(go.Bar(x=df['date'], y=df['duration'], name='Sleep', marker_color='#8b5cf6'))
-        fig.add_trace(go.Scatter(x=df['date'], y=[8]*len(df), name='Recommended', line=dict(color='#10b981', dash='dash')))
-        fig.update_layout(height=300)
-        st.plotly_chart(fig, use_container_width=True)
-        
-        col1, col2, col3, col4 = st.columns(4)
-        avg = df['duration'].mean()
-        with col1:
-            st.metric("Avg Sleep", f"{avg:.1f}h")
-        with col2:
-            st.metric("Optimal", len(df[(df['duration'] >= 7) & (df['duration'] <= 9)]))
-        with col3:
-            st.metric("Max", f"{df['duration'].max():.1f}h")
-        with col4:
-            st.metric("Min", f"{df['duration'].min():.1f}h")
-    
-    st.markdown("---")
-    col1, col2 = st.columns(2)
+# Sleep Tab
+elif "😴 Sleep" in selected_tab:
+    col1, col2 = st.columns([1.5, 1])
     
     with col1:
-        st.markdown("### 🌙 Log Sleep")
-        sleep_date = st.date_input("Date")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            bedtime = st.time_input("Bedtime", value=datetime.strptime("23:00", "%H:%M").time())
-        with col_b:
-            waketime = st.time_input("Wake Time", value=datetime.strptime("07:00", "%H:%M").time())
+        st.markdown("### Sleep Schedule")
+        st.markdown("<p style='color: #6b7280; margin-bottom: 20px;'>Optimize your rest for peak performance</p>", unsafe_allow_html=True)
         
-        if st.button("Log Entry", type="primary", use_container_width=True):
-            add_sleep_entry(sleep_date, bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
-            st.success("✅ Logged!")
-            st.rerun()
+        with st.container():
+            st.markdown("<div class='card'>", unsafe_allow_html=True)
+            
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.markdown("#### 🌙 Bedtime")
+                bedtime = st.time_input("Bedtime", value=datetime.strptime("22:00", "%H:%M").time(), label_visibility="collapsed")
+            with col_b:
+                st.markdown("#### ☀️ Wake Time")
+                waketime = st.time_input("Wake Time", value=datetime.strptime("06:00", "%H:%M").time(), label_visibility="collapsed")
+            
+            duration = calculate_duration(bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
+            
+            st.markdown(f"""
+            <div class='duration-display'>
+                <div style='font-size: 14px; opacity: 0.9; margin-bottom: 8px;'>⏰ Sleep Duration</div>
+                <div class='duration-number'>{duration} hours</div>
+                <div style='font-size: 14px; opacity: 0.9;'>Target: 8 hours</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            sleep_date = st.date_input("Date", label_visibility="collapsed")
+            
+            if st.button("💾 Save Schedule", type="primary", use_container_width=True):
+                add_sleep_entry(sleep_date, bedtime.strftime("%H:%M"), waketime.strftime("%H:%M"))
+                st.success("✅ Sleep schedule saved")
+                st.rerun()
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        # Smart Suggestions
+        st.markdown("""
+        <div class='suggestions-box'>
+            <div style='color: #5a67d8; font-weight: 600; font-size: 16px; margin-bottom: 12px;'>
+                💡 Smart Suggestions for Professionals
+            </div>
+        """, unsafe_allow_html=True)
+        
+        for suggestion in get_smart_suggestions():
+            st.markdown(f"<div class='suggestion-item'>{suggestion}</div>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
     
     with col2:
-        st.markdown("### 📈 History")
+        st.markdown("### Sleep History")
+        
         if st.session_state.sleep_data:
             for entry in st.session_state.sleep_data[-5:]:
                 quality, emoji, color = get_sleep_quality(entry['duration'])
-                st.markdown(f"<div style='background: white; padding: 15px; border-radius: 10px; border-left: 5px solid {color};'><strong>{entry['date']}</strong><br>{entry['bedtime']} → {entry['waketime']}<br><span style='font-size: 24px;'>{entry['duration']}h</span> {emoji} {quality}</div><br>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class='card'>
+                    <div style='font-weight: 600; margin-bottom: 8px;'>{entry['date']}</div>
+                    <div style='color: #6b7280; font-size: 14px; margin-bottom: 12px;'>
+                        {entry['bedtime']} → {entry['waketime']}
+                    </div>
+                    <div style='display: flex; justify-content: space-between; align-items: center;'>
+                        <div style='font-size: 1.8em; font-weight: 700;'>{entry['duration']}h</div>
+                        <div style='color: {color}; font-weight: 600;'>{emoji} {quality}</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No sleep data yet")
 
-elif selected_tab == "Team":
-    st.markdown("## 👥 Team Wellness")
-    team = [
-        {'name': 'Sarah Johnson', 'tasks': 5, 'sleep': 7.2, 'status': 'warning'},
-        {'name': 'Mike Chen', 'tasks': 3, 'sleep': 5.8, 'status': 'danger'},
-        {'name': 'Emma Davis', 'tasks': 4, 'sleep': 8.1, 'status': 'ok'}
-    ]
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("Members", len(team))
-    with col2:
-        st.metric("Critical", len([m for m in team if m['status'] == 'danger']))
-    with col3:
-        st.metric("Warning", len([m for m in team if m['status'] == 'warning']))
-    
-    st.markdown("---")
-    for m in team:
-        config = {'ok': ('🟢', 'Healthy', '#10b981'), 'warning': ('🟡', 'At Risk', '#f59e0b'), 'danger': ('🔴', 'Critical', '#ef4444')}
-        emoji, label, color = config[m['status']]
-        st.markdown(f"<div style='background: white; padding: 20px; border-radius: 12px; border-left: 5px solid {color};'><h3>{m['name']} {emoji} {label}</h3><p>📋 {m['tasks']} tasks | 😴 {m['sleep']}h sleep</p></div><br>", unsafe_allow_html=True)
+# Analytics, Team, Billing tabs (keeping them simple for now)
+elif "📊 Analytics" in selected_tab:
+    st.markdown("### Analytics Dashboard")
+    if st.session_state.tasks:
+        completed = len([t for t in st.session_state.tasks if t['completed']])
+        pending = len(st.session_state.tasks) - completed
+        fig = go.Figure(data=[go.Pie(
+            labels=['Completed', 'Pending'],
+            values=[completed, pending],
+            hole=.5,
+            marker_colors=['#10b981', '#ef4444']
+        )])
+        fig.update_layout(height=400, showlegend=True)
+        st.plotly_chart(fig, use_container_width=True)
 
-elif selected_tab == "Billing":
-    st.markdown("## 💰 Billing")
-    st.session_state.hourly_rate = st.number_input("Hourly Rate", value=st.session_state.hourly_rate, min_value=10)
+elif "👥 Team" in selected_tab:
+    st.markdown("### Team Dashboard")
+    st.info("Team features coming soon")
+
+elif "💰 Billing" in selected_tab:
+    st.markdown("### Billing & Time Tracking")
+    st.session_state.hourly_rate = st.number_input("Hourly Rate (USD)", value=st.session_state.hourly_rate, min_value=10)
     
-    col1, col2, col3 = st.columns(3)
     hours = len(st.session_state.tasks) * 2
     earnings = hours * st.session_state.hourly_rate
     
+    col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Hours", f"{hours}h")
+        st.metric("Hours Tracked", f"{hours}h")
     with col2:
-        st.metric("Rate", f"${st.session_state.hourly_rate}")
+        st.metric("Hourly Rate", f"${st.session_state.hourly_rate}")
     with col3:
-        st.metric("Earnings", f"${earnings}")
-    
-    if st.button("Generate Invoice", type="primary"):
-        st.balloons()
-        st.success(f"Invoice: ${earnings}")
-
-elif selected_tab == "Analytics":
-    st.markdown("## 📊 Analytics")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.session_state.tasks:
-            completed = len([t for t in st.session_state.tasks if t['completed']])
-            pending = len(st.session_state.tasks) - completed
-            fig = go.Figure(data=[go.Pie(labels=['Completed', 'Pending'], values=[completed, pending], hole=.4, marker_colors=['#10b981', '#ef4444'])])
-            fig.update_layout(height=300)
-            st.plotly_chart(fig, use_container_width=True)
-    
-    with col2:
-        if st.session_state.sleep_data:
-            df = pd.DataFrame(st.session_state.sleep_data)
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=df['date'], y=df['duration'], mode='lines+markers', line=dict(color='#8b5cf6', width=3)))
-            fig.update_layout(height=300)
-            st.plotly_chart(fig, use_container_width=True)
-    
-    risk, emoji, color = calculate_burnout_risk()
-    st.markdown(f"<div style='background: {color}; padding: 30px; border-radius: 20px; color: white; text-align: center;'><h2 style='color: white;'>Burnout Risk</h2><h1 style='color: white; font-size: 3em;'>{emoji} {risk}</h1></div>", unsafe_allow_html=True)
+        st.metric("Total Earnings", f"${earnings}")
